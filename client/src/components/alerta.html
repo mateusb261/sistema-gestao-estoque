@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Alertas</title>
+    <link rel="stylesheet" href="alerta.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1><a href="inicio.html" style="color: white; text-decoration: none;">SistemaGE</a></h1>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="usuario.html">Usuários</a></li>
+            <li><a href="produto.html">Produtos</a></li>
+            <li><a href="fornecedor.html">Fornecedores</a></li>
+            <li><a href="alerta.html">Alertas (6)</a></li>
+            <li><a href="login.html">Sair</a></li>
+        </ul>
+        <ul class="voltar">
+            <li><a href="inicio.html">Voltar</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div class="alertas-produto">
+            <h2>Visualizar Alertas</h2>
+            <div id="alertas">
+                <div class="alerta">
+                    <p>Produto abaixo do estoque!</p>
+                    <p>Código GTIN: 1234567890123</p>
+                    <p>Nome do Produto: Produto A</p>
+                    <p>Estoque Atual: 5</p>
+                    <p>Estoque Mínimo: 10</p>
+                </div>
+                <div class="alerta">
+                    <p>Produto abaixo do estoque!</p>
+                    <p>Código GTIN: 9876543210987</p>
+                    <p>Nome do Produto: Produto B</p>
+                    <p>Estoque Atual: 3</p>
+                    <p>Estoque Mínimo: 8</p>
+                </div>
+            </div>
+            <button class="botao-voltar" type="button" onclick="window.location.href='inicio.html'">Voltar</button>
+        </div>
+    </main>
+</body>
+</html>

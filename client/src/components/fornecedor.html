@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Fornecedores</title>
+    <link rel="stylesheet" href="fornecedor.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1><a href="inicio.html" style="color: white; text-decoration: none;">SistemaGE</a></h1>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="usuario.html">Usuários</a></li>
+            <li><a href="produto.html">Produtos</a></li>
+            <li><a href="fornecedor.html">Fornecedores</a></li>
+            <li><a href="alerta.html">Alertas (6)</a></li>
+            <li><a href="login.html">Sair</a></li>
+        </ul>
+        <ul class="voltar">
+            <li><a href="inicio.html">Voltar</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div class="cadastro-fornecedor">
+            <h2>Manter Fornecedor</h2>
+            
+            <form id="fornecedor-form">
+                <label for="cnpj-fornecedor">CNPJ do Fornecedor:</label><br>
+                <input type="text" id="cnpj-fornecedor" name="cnpj-fornecedor"><br><br>
+
+                <label for="nome-fornecedor">Nome do Fornecedor:</label><br>
+                <input type="text" id="nome-fornecedor" name="nome-fornecedor"><br><br>
+
+                <label for="telefone-fornecedor">Telefone do Fornecedor:</label><br>
+                <input type="tel" id="telefone-fornecedor" name="telefone-fornecedor"><br><br>
+                
+                <label for="email-fornecedor">E-mail do Fornecedor:</label><br>
+                <input type="email" id="email-fornecedor" name="email-fornecedor"><br><br>
+
+                <input type="hidden" id="index" name="index">
+                
+                <button type="button" onclick="adicionarOuAlterarFornecedor()">Cadastrar Fornecedor</button>
+                <button type="button" onclick="consultarFornecedor()">Consultar Fornecedor</button>
+                <button type="button" onclick="window.location.href='inicio.html'">Voltar</button>
+            </form>
+        </div>
+
+        <div class="lista-fornecedores">
+            <h3>Lista de Fornecedores</h3>
+            <table id="tabela-fornecedores">
+                <thead>
+                    <tr>
+                        <th>CNPJ</th>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                        <th>E-mail</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        const fornecedores = JSON.parse(localStorage.getItem('fornecedores')) || [];
+
+        function adicionarOuAlterarFornecedor() {
+            const cnpjFornecedor = document.getElementById('cnpj-fornecedor').value;
+            const nomeFornecedor = document.getElementById('nome-fornecedor').value;
+            const telefoneFornecedor = document.getElementById('telefone-fornecedor').value;
+            const emailFornecedor = document.getElementById('email-fornecedor').value;
+            const index = document.getElementById('index').value;
+
+            if (cnpjFornecedor.trim() === '' || nomeFornecedor.trim() === '' ||
+            telefoneFornecedor.trim() === '' || emailFornecedor.trim() === '') {
+                return;
+            }
+
+            const fornecedor = {
+                cnpjFornecedor,
+                nomeFornecedor,
+                telefoneFornecedor,
+                emailFornecedor
+            };
+
+            if (index === '') {
+                fornecedores.push(fornecedor);
+            } else {
+                fornecedores[index] = fornecedor;
+            }
+
+            localStorage.setItem('fornecedores', JSON.stringify(fornecedores));
+            limparFormulario();
+            carregarFornecedores();
+        }
+
+        function consultarFornecedor() {
+            const cnpjFornecedor = document.getElementById('cnpj-fornecedor').value.toLowerCase();
+            const nomeFornecedor = document.getElementById('nome-fornecedor').value.toLowerCase();
+            const telefoneFornecedor = document.getElementById('telefone-fornecedor').value.toLowerCase();
+            const emailFornecedor = document.getElementById('email-fornecedor').value.toLowerCase();
+
+            const resultados = fornecedores.filter(fornecedor => {
+                return (cnpjFornecedor === '' || fornecedor.cnpjFornecedor.toLowerCase().includes(cnpjFornecedor)) &&
+                       (nomeFornecedor === '' || fornecedor.nomeFornecedor.toLowerCase().includes(nomeFornecedor)) &&
+                       (telefoneFornecedor === '' || fornecedor.telefoneFornecedor.toLowerCase().includes(telefoneFornecedor)) &&
+                       (emailFornecedor === '' || fornecedor.emailFornecedor.toLowerCase().includes(emailFornecedor));
+            });
+
+            carregarFornecedores(resultados);
+        }
+
+        function carregarFornecedores(lista = fornecedores) {
+            const tabela = document.querySelector('#tabela-fornecedores tbody');
+            tabela.innerHTML = '';
+
+            lista.forEach((fornecedor, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${fornecedor.cnpjFornecedor}</td>
+                    <td>${fornecedor.nomeFornecedor}</td>
+                    <td>${fornecedor.telefoneFornecedor}</td>
+                    <td>${fornecedor.emailFornecedor}</td>
+                    <td>
+                        <button onclick="editarFornecedor(${index})">Alterar</button>
+                        <button onclick="excluirFornecedor(${index})">Excluir</button>
+                    </td>
+                `;
+                tabela.appendChild(row);
+            });
+        }
+
+        function editarFornecedor(index) {
+            const fornecedor = fornecedores[index];
+            document.getElementById('cnpj-fornecedor').value = fornecedor.cnpjFornecedor;
+            document.getElementById('nome-fornecedor').value = fornecedor.nomeFornecedor;
+            document.getElementById('telefone-fornecedor').value = fornecedor.telefoneFornecedor;
+            document.getElementById('email-fornecedor').value = fornecedor.emailFornecedor;
+            document.getElementById('index').value = index;
+        }
+
+        function excluirFornecedor(index) {
+            fornecedores.splice(index, 1);
+            localStorage.setItem('fornecedores', JSON.stringify(fornecedores));
+            carregarFornecedores();
+        }
+
+        function limparFormulario() {
+            document.getElementById('fornecedor-form').reset();
+            document.getElementById('index').value = '';
+        }
+
+        window.onload = carregarFornecedores;
+    </script>
+</body>
+</html>

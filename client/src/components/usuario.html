@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Usuários</title>
+    <link rel="stylesheet" href="usuario.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1><a href="inicio.html" style="color: white; text-decoration: none;">SistemaGE</a></h1>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="usuario.html">Usuários</a></li>
+            <li><a href="produto.html">Produtos</a></li>
+            <li><a href="fornecedor.html">Fornecedores</a></li>
+            <li><a href="alerta.html">Alertas (6)</a></li>
+            <li><a href="login.html">Sair</a></li>
+        </ul>
+        <ul class="voltar">
+            <li><a href="inicio.html">Voltar</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div class="cadastro-usuario">
+            <h2>Manter Usuário</h2>
+            
+            <form id="usuario-form">
+                <label for="nome-usuario">Nome de Usuário:</label><br>
+                <input type="text" id="nome-usuario" name="nome-usuario" required><br><br>
+
+                <label for="email">E-mail:</label><br>
+                <input type="email" id="email" name="email" required><br><br>
+                
+                <label for="senha">Senha:</label><br>
+                <input type="password" id="senha" name="senha" required><br><br>
+
+                <input type="hidden" id="index" name="index">
+                
+                <button type="button" onclick="adicionarOuAlterarUsuario()">Cadastrar Usuário</button>
+                <button type="button" onclick="consultarUsuario()">Consultar Usuário</button>
+                <button type="button" onclick="window.location.href='inicio.html'">Voltar</button>
+            </form>
+        </div>
+
+        <div class="lista-usuarios">
+            <h3>Lista de Usuários</h3>
+            <table id="tabela-usuarios">
+                <thead>
+                    <tr>
+                        <th>Nome de Usuário</th>
+                        <th>E-mail</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+
+        function adicionarOuAlterarUsuario() {
+            const nomeUsuario = document.getElementById('nome-usuario').value;
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            const index = document.getElementById('index').value;
+
+            if (nomeUsuario.trim() === '' || email.trim() === '' || senha.trim() === '') {
+                return;
+            }
+
+            const usuario = {
+                nomeUsuario,
+                email,
+                senha
+            };
+
+            if (index === '') {
+                usuarios.push(usuario);
+            } else {
+                usuarios[index] = usuario;
+            }
+
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            limparFormulario();
+            carregarUsuarios();
+        }
+
+        function consultarUsuario() {
+            const nomeUsuario = document.getElementById('nome-usuario').value.toLowerCase();
+            const email = document.getElementById('email').value.toLowerCase();
+
+            const resultados = usuarios.filter(usuario => {
+                return (nomeUsuario === '' || usuario.nomeUsuario.toLowerCase().includes(nomeUsuario)) &&
+                       (email === '' || usuario.email.toLowerCase().includes(email));
+            });
+
+            carregarUsuarios(resultados);
+        }
+
+        function carregarUsuarios(lista = usuarios) {
+            const tabela = document.querySelector('#tabela-usuarios tbody');
+            tabela.innerHTML = '';
+
+            lista.forEach((usuario, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${usuario.nomeUsuario}</td>
+                    <td>${usuario.email}</td>
+                    <td>
+                        <button onclick="editarUsuario(${index})">Alterar</button>
+                        <button onclick="excluirUsuario(${index})">Excluir</button>
+                    </td>
+                `;
+                tabela.appendChild(row);
+            });
+        }
+
+        function editarUsuario(index) {
+            const usuario = usuarios[index];
+            document.getElementById('nome-usuario').value = usuario.nomeUsuario;
+            document.getElementById('email').value = usuario.email;
+            document.getElementById('senha').value = usuario.senha;
+            document.getElementById('index').value = index;
+        }
+
+        function excluirUsuario(index) {
+            usuarios.splice(index, 1);
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            carregarUsuarios();
+        }
+
+        function limparFormulario() {
+            document.getElementById('usuario-form').reset();
+            document.getElementById('index').value = '';
+        }
+
+        window.onload = carregarUsuarios;
+    </script>
+</body>
+</html>

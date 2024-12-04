@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Estoque - Registro de Saída</title>
+    <link rel="stylesheet" href="saida.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1><a href="inicio.html" style="color: white; text-decoration: none;">SistemaGE</a></h1>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="usuario.html">Usuários</a></li>
+            <li><a href="produto.html">Produtos</a></li>
+            <li><a href="fornecedor.html">Fornecedores</a></li>
+            <li><a href="alerta.html">Alertas (6)</a></li>
+            <li><a href="login.html">Sair</a></li>
+        </ul>
+        <ul class="voltar">
+            <li><a href="inicio.html">Voltar</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div class="cadastro-saida">
+            <form id="saida-exemplo-form">
+                <div class="formulario">
+                    <h2>Editar Saída</h2>
+                    <div class="inputs">
+                        <div class="input-group">
+                            <label for="codigo-documento">Código do Documento:</label><br>
+                            <input type="text" id="codigo-documento" name="codigo-documento" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="data-saida">Data de Saída:</label><br>
+                            <input type="text" id="data-saida" name="data-saida" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="tipo-saida">Tipo de Saída:</label><br>
+                            <select id="tipo-saida" name="tipo-saida" disabled>
+                                <option value=""> </option>
+                                <option value="venda">Venda</option>
+                                <option value="consignacao">Consignação</option>
+                                <option value="doacao">Doação</option>
+                                <option value="amostra">Amostra</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                    
+                <div class="formulario">
+                    <div class="inputs">
+                        <div class="input-group">
+                            <label for="cnpj-cliente">CNPJ do Cliente:</label><br>
+                            <input type="text" id="cnpj-cliente" name="cnpj-cliente" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="nome-cliente">Nome do Cliente:</label><br>
+                            <input type="text" id="nome-cliente" name="nome-cliente" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="telefone-cliente">Telefone do Cliente:</label><br>
+                            <input type="text" id="telefone-cliente" name="telefone-cliente" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="email-cliente">E-mail do Cliente:</label><br>
+                            <input type="email" id="email-cliente" name="email-cliente" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="formulario">
+                    <div class="inputs">
+                        <div class="input-group">
+                            <label for="codigo-gtin">Código GTIN:</label><br>
+                            <input type="text" id="codigo-gtin" name="codigo-gtin">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="nome-produto">Nome do Produto:</label><br>
+                            <input type="text" id="nome-produto" name="nome-produto" disabled><br><br>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="tipo-produto">Tipo do Produto:</label><br>
+                            <input type="text" id="tipo-produto" name="tipo-produto" disabled>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="estoque-minimo">Estoque Mínimo:</label><br>
+                            <input type="number" id="estoque-minimo" name="estoque-minimo" min="0" disabled><br><br>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="valor-unitario">Valor Unitário:</label><br>
+                            <input type="number" id="valor-unitario" name="valor-unitario" step="0.01">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="quantidade">Quantidade:</label><br>
+                            <input type="number" id="quantidade" name="quantidade" min="1">
+                        </div>
+                    </div><br>
+                    <button type="button" onclick="finalizarEdicao()">Finalizar Edição</button>
+                    <button type="button" onclick="cancelarEdicao()">Cancelar Edição</button>
+                </div>
+
+                <input type="hidden" id="index" name="index">
+            </form>
+        </div>
+
+    <script>
+        const produtos = {
+            '1': { nome: 'Produto A', tipo: 'Móveis', estoqueMinimo: 10 },
+            '2': { nome: 'Produto B', tipo: 'Eletrônicos', estoqueMinimo: 5 },
+            '3': { nome: 'Produto C', tipo: 'Alimentação', estoqueMinimo: 20 }
+        };
+
+        function carregarDadosEdicao() {
+            const saida = JSON.parse(localStorage.getItem('saidaEditando'));
+            if (!saida) return;
+
+            document.getElementById('codigo-documento').value = saida.codigoDocumento;
+            document.getElementById('data-saida').value = saida.dataSaida;
+            document.getElementById('tipo-saida').value = saida.tipoSaida;
+            document.getElementById('cnpj-cliente').value = saida.cnpjCliente;
+            document.getElementById('nome-cliente').value = saida.nomeCliente;
+            document.getElementById('telefone-cliente').value = saida.telefoneCliente;
+            document.getElementById('email-cliente').value = saida.emailCliente;
+            document.getElementById('codigo-gtin').value = saida.codigoGtin;
+            document.getElementById('quantidade').value = saida.quantidade;
+            document.getElementById('valor-unitario').value = saida.valorUnitario;
+
+            if (saida.valorUnitario !== undefined) {
+                document.getElementById('valor-unitario').value = saida.valorUnitario;
+            } else {
+                document.getElementById('valor-unitario').value = '';
+            }
+
+            preencherProduto(saida.codigoGtin);
+        }
+
+        document.getElementById('codigo-gtin').addEventListener('input', function () {
+            const codigoGtin = this.value.trim();
+            preencherProduto(codigoGtin);
+        });
+
+        function preencherProduto(codigoGtin) {
+            const produto = produtos[codigoGtin];
+            if (produto) {
+                document.getElementById('nome-produto').value = produto.nome;
+                document.getElementById('tipo-produto').value = produto.tipo;
+                document.getElementById('estoque-minimo').value = produto.estoqueMinimo;
+            } else {
+                document.getElementById('nome-produto').value = '';
+                document.getElementById('tipo-produto').value = '';
+                document.getElementById('estoque-minimo').value = '';
+            }
+        }
+
+        function finalizarEdicao() {
+            const saidaEditada = {
+                codigoDocumento: document.getElementById('codigo-documento').value,
+                dataSaida: document.getElementById('data-saida').value,
+                cnpjCliente: document.getElementById('cnpj-cliente').value,
+                nomeCliente: document.getElementById('nome-cliente').value,
+                telefoneCliente: document.getElementById('telefone-cliente').value,
+                emailCliente: document.getElementById('email-cliente').value,
+                tipoSaida: document.getElementById('tipo-saida').value,
+                codigoGtin: document.getElementById('codigo-gtin').value,
+                valorUnitario: document.getElementById('valor-unitario').value,
+                quantidade: document.getElementById('quantidade').value
+            };
+
+            localStorage.setItem('saidaEditada', JSON.stringify(saidaEditada));
+            localStorage.removeItem('saidaEditando');
+            window.location.href = 'saida.html';
+        }
+
+        function cancelarEdicao() {
+            localStorage.removeItem('saidaEditando');
+            window.location.href = 'saida.html';
+        }
+
+        window.onload = carregarDadosEdicao;
+    </script>
+    
+</body>
+</html>

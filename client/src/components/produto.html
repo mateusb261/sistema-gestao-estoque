@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Estoque</title>
+    <link rel="stylesheet" href="produto.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1><a href="inicio.html" style="color: white; text-decoration: none;">SistemaGE</a></h1>
+        </div>
+    </header>
+    <nav>
+        <ul>
+          <li><Link to="/usuario">Usuários</Link></li>
+          <li><Link to="/produto">Produtos</Link></li>
+          <li><Link to="/fornecedor">Fornecedores</Link></li>
+          <li><Link to="/alerta">Alertas (6)</Link></li>
+          <li><Link to="/login">Sair</Link></li>
+        </ul>
+        <ul class="voltar">
+            <li><a href="inicio.html">Voltar</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div class="cadastro-produto">
+            <h2>Manter Produto</h2>
+            
+            <form id="produto-form">
+                <label for="gtin">Código GTIN:</label><br>
+                <input type="text" id="gtin" name="gtin"><br><br>
+                
+                <label for="nome-produto">Nome do Produto:</label><br>
+                <input type="text" id="nome-produto" name="nome-produto"><br><br>
+                
+                <label for="tipo-produto">Tipo do Produto:</label><br>
+                <select id="tipo-produto" name="tipo-produto">
+                    <option value="moveis">Móveis</option>
+                    <option value="eletronicos">Eletrônicos</option>
+                    <option value="alimentacao">Alimentação</option>
+                </select><br><br>
+                
+                <label for="estoque-minimo">Estoque Mínimo:</label><br>
+                <input type="number" id="estoque-minimo" name="estoque-minimo" min="0"><br><br>
+                
+                <input type="hidden" id="index" name="index">
+                
+                <button type="button" onclick="adicionarOuAlterarProduto()">Cadastrar Produto</button>
+                <button type="button" onclick="consultarProduto()">Consultar Produto</button>
+                <button type="button" onclick="window.location.href='inicio.html'">Voltar</button>
+            </form>
+        </div>
+
+        <div class="lista-produtos">
+            <h3>Lista de Produtos</h3>
+            <table id="tabela-produtos">
+                <thead>
+                    <tr>
+                        <th>Código GTIN</th>
+                        <th>Nome do Produto</th>
+                        <th>Tipo</th>
+                        <th>Estoque Mínimo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        const produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+
+        function adicionarOuAlterarProduto() {
+            const gtin = document.getElementById('gtin').value;
+            const nomeProduto = document.getElementById('nome-produto').value;
+            const tipoProduto = document.getElementById('tipo-produto').value;
+            const estoqueMinimo = document.getElementById('estoque-minimo').value;
+            const index = document.getElementById('index').value;
+
+            if (gtin.trim() === '' || nomeProduto.trim() === '' ||
+            tipoProduto.trim() === '' || estoqueMinimo.trim() === '') {
+                return;
+            }
+
+            const produto = {
+                gtin,
+                nomeProduto,
+                tipoProduto,
+                estoqueMinimo
+            };
+
+            if (index === '') {
+                produtos.push(produto);
+            } else {
+                produtos[index] = produto;
+            }
+
+            localStorage.setItem('produtos', JSON.stringify(produtos));
+            limparFormulario();
+            carregarProdutos();
+        }
+
+        function consultarProduto() {
+            const gtin = document.getElementById('gtin').value.toLowerCase();
+            const nomeProduto = document.getElementById('nome-produto').value.toLowerCase();
+            const tipoProduto = document.getElementById('tipo-produto').value.toLowerCase();
+            const estoqueMinimo = document.getElementById('estoque-minimo').value;
+
+            const resultados = produtos.filter(produto => {
+                return (gtin === '' || produto.gtin.toLowerCase().includes(gtin)) &&
+                       (nomeProduto === '' || produto.nomeProduto.toLowerCase().includes(nomeProduto)) &&
+                       (tipoProduto === '' || produto.tipoProduto.toLowerCase() === tipoProduto) &&
+                       (estoqueMinimo === '' || produto.estoqueMinimo >= estoqueMinimo);
+            });
+
+            carregarProdutos(resultados);
+        }
+
+        function carregarProdutos(lista = produtos) {
+            const tabela = document.querySelector('#tabela-produtos tbody');
+            tabela.innerHTML = '';
+
+            lista.forEach((produto, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${produto.gtin}</td>
+                    <td>${produto.nomeProduto}</td>
+                    <td>${produto.tipoProduto}</td>
+                    <td>${produto.estoqueMinimo}</td>
+                    <td>
+                        <button onclick="editarProduto(${index})">Alterar</button>
+                        <button onclick="excluirProduto(${index})">Excluir</button>
+                    </td>
+                `;
+                tabela.appendChild(row);
+            });
+        }
+
+        function editarProduto(index) {
+            const produto = produtos[index];
+            document.getElementById('gtin').value = produto.gtin;
+            document.getElementById('nome-produto').value = produto.nomeProduto;
+            document.getElementById('tipo-produto').value = produto.tipoProduto;
+            document.getElementById('estoque-minimo').value = produto.estoqueMinimo;
+            document.getElementById('index').value = index;
+        }
+
+        function excluirProduto(index) {
+            produtos.splice(index, 1);
+            localStorage.setItem('produtos', JSON.stringify(produtos));
+            carregarProdutos();
+        }
+
+        function limparFormulario() {
+            document.getElementById('produto-form').reset();
+            document.getElementById('index').value = '';
+        }
+
+        window.onload = carregarProdutos;
+    </script>
+</body>
+</html>

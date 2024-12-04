@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Estoque - Registro de Entrada</title>
+    <link rel="stylesheet" href="entrada.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1><a href="inicio.html" style="color: white; text-decoration: none;">SistemaGE</a></h1>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="usuario.html">Usuários</a></li>
+            <li><a href="produto.html">Produtos</a></li>
+            <li><a href="fornecedor.html">Fornecedores</a></li>
+            <li><a href="alerta.html">Alertas (6)</a></li>
+            <li><a href="login.html">Sair</a></li>
+        </ul>
+        <ul class="voltar">
+            <li><a href="inicio.html">Voltar</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div class="cadastro-entrada">
+            <form id="entrada-form">
+                <div class="formulario">
+                    <h2>Registro de Entrada de Produto</h2>
+                    <div class="inputs">
+                        <div class="input-group">
+                            <label for="codigo-documento">Código do Documento:</label><br>
+                            <input type="text" id="codigo-documento" name="codigo-documento" required oninput="toggleCampos()">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="data-entrada">Data de Entrada (DD/MM/AAAA):</label><br>
+                            <input type="text" id="data-entrada" name="data-entrada" required oninput="toggleCampos()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="formulario">
+                    <div class="inputs">
+                        <div class="input-group">
+                            <label for="cnpj-fornecedor">CNPJ do Fornecedor:</label><br>
+                            <input type="text" id="cnpj-fornecedor" name="cnpj-fornecedor" disabled oninput="preencherFornecedor()">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="nome-fornecedor">Nome do Fornecedor:</label><br>
+                            <input type="text" id="nome-fornecedor" name="nome-fornecedor" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="telefone-fornecedor">Telefone do Fornecedor:</label><br>
+                            <input type="text" id="telefone-fornecedor" name="telefone-fornecedor" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="email-fornecedor">E-mail do Fornecedor:</label><br>
+                            <input type="email" id="email-fornecedor" name="email-fornecedor" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="formulario">
+                    <div class="inputs">
+                        <div class="input-group">
+                            <label for="codigo-gtin">Código GTIN:</label><br>
+                            <input type="text" id="codigo-gtin" name="codigo-gtin" oninput="preencherProduto()" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="nome-produto">Nome do Produto:</label><br>
+                            <input type="text" id="nome-produto" name="nome-produto" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="tipo-produto">Tipo do Produto:</label><br>
+                            <input type="text" id="tipo-produto" name="tipo-produto" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="estoque-minimo">Estoque Mínimo:</label><br>
+                            <input type="number" id="estoque-minimo" name="estoque-minimo" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="valor-unitario">Valor Unitário:</label><br>
+                            <input type="text" id="valor-unitario" name="valor-unitario" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="quantidade">Quantidade:</label><br>
+                            <input type="number" id="quantidade" name="quantidade" disabled>
+                        </div>
+                    </div><br><br>
+                    <button type="button" onclick="adicionarOuAlterarEntrada()">Armazenar Entrada de Produto</button>
+                    <button type="button" onclick="finalizarRegistro()">Finalizar Registro de Entrada</button>
+                    <button type="button" onclick="limparFormulario()">Limpar</button>
+                </div>
+
+                <input type="hidden" id="index" name="index">
+            </form>
+        </div>
+
+        <div class="lista-entradas">
+            <h3>Lista de Entradas de Produtos</h3>
+            <table id="tabela-entradas">
+                <thead>
+                    <tr>
+                        <th>Código do Documento</th>
+                        <th>Data de Entrada</th>
+                        <th>CNPJ do Fornecedor</th>
+                        <th>Nome do Fornecedor</th>
+                        <th>Código GTIN</th>
+                        <th>Nome do Produto</th>
+                        <th>Quantidade</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        const entradas = JSON.parse(localStorage.getItem('entradas')) || [];
+
+        function toggleCampos() {
+            const codigoDocumento = document.getElementById('codigo-documento').value.trim();
+            const dataEntrada = document.getElementById('data-entrada').value.trim();
+
+            const camposFornecedor = [
+                'cnpj-fornecedor',
+                'nome-fornecedor',
+                'telefone-fornecedor',
+                'email-fornecedor'
+            ];
+            const camposProduto = [
+                'codigo-gtin',
+                'valor-unitario',
+                'quantidade'
+            ];
+
+            const habilitarFornecedor = codigoDocumento !== '' && dataEntrada !== '';
+            camposFornecedor.forEach(id => {
+                document.getElementById(id).disabled = !habilitarFornecedor;
+            });
+
+            const habilitarProduto = habilitarFornecedor;
+            camposProduto.forEach(id => {
+                document.getElementById(id).disabled = !habilitarProduto;
+            });
+        }
+
+        function preencherFornecedor() {
+            const cnpjFornecedor = document.getElementById('cnpj-fornecedor').value.trim();
+            const fornecedores = {
+                '1': { nome: 'Fornecedor A', telefone: '11 91234-5678', email: 'fornecedorA@email.com' },
+                '2': { nome: 'Fornecedor B', telefone: '21 98765-4321', email: 'fornecedorB@email.com' },
+            };
+
+            const fornecedor = fornecedores[cnpjFornecedor];
+            if (fornecedor) {
+                document.getElementById('nome-fornecedor').value = fornecedor.nome;
+                document.getElementById('telefone-fornecedor').value = fornecedor.telefone;
+                document.getElementById('email-fornecedor').value = fornecedor.email;
+            } else {
+                document.getElementById('nome-fornecedor').value = '';
+                document.getElementById('telefone-fornecedor').value = '';
+                document.getElementById('email-fornecedor').value = '';
+            }
+        }
+
+        function preencherProduto() {
+            const codigoGtin = document.getElementById('codigo-gtin').value.trim();
+            const produtos = {
+                '1': { nome: 'Produto A', tipo: 'Móveis', estoqueMinimo: 10},
+                '2': { nome: 'Produto B', tipo: 'Eletrônicos', estoqueMinimo: 5},
+                '3': { nome: 'Produto C', tipo: 'Alimentação', estoqueMinimo: 20}
+            };
+
+            const produto = produtos[codigoGtin];
+            if (produto) {
+                document.getElementById('nome-produto').value = produto.nome;
+                document.getElementById('tipo-produto').value = produto.tipo;
+                document.getElementById('estoque-minimo').value = produto.estoqueMinimo;
+            } else {
+                document.getElementById('nome-produto').value = '';
+                document.getElementById('tipo-produto').value = '';
+                document.getElementById('estoque-minimo').value = '';
+            }
+        }
+
+        function adicionarOuAlterarEntrada() {
+            const codigoDocumento = document.getElementById('codigo-documento').value.trim();
+            const dataEntrada = document.getElementById('data-entrada').value.trim();
+            const cnpjFornecedor = document.getElementById('cnpj-fornecedor').value.trim();
+            const nomeFornecedor = document.getElementById('nome-fornecedor').value.trim();
+            const telefoneFornecedor = document.getElementById('telefone-fornecedor').value.trim();
+            const emailFornecedor = document.getElementById('email-fornecedor').value.trim();
+            const codigoGtin = document.getElementById('codigo-gtin').value.trim();
+            const nomeProduto = document.getElementById('nome-produto').value.trim();
+            const tipoProduto = document.getElementById('tipo-produto').value;
+            const estoqueMinimo = document.getElementById('estoque-minimo').value.trim();
+            const valorUnitario = document.getElementById('valor-unitario').value.trim();
+            const quantidade = document.getElementById('quantidade').value.trim();
+
+            if (!codigoDocumento || !dataEntrada || !cnpjFornecedor || !codigoGtin || !quantidade) {
+                return;
+            }
+
+            const entrada = {
+                codigoDocumento,
+                dataEntrada,
+                cnpjFornecedor,
+                nomeFornecedor,
+                telefoneFornecedor,
+                emailFornecedor,
+                codigoGtin,
+                nomeProduto,
+                tipoProduto,
+                estoqueMinimo,
+                valorUnitario,
+                quantidade
+            };
+
+            entradas.push(entrada);
+            localStorage.setItem('entradas', JSON.stringify(entradas));
+            atualizarTabela();
+            limparFormulario();
+        }
+
+        function atualizarTabela() {
+            const tbody = document.querySelector('#tabela-entradas tbody');
+            tbody.innerHTML = '';
+            entradas.forEach((entrada, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${entrada.codigoDocumento}</td>
+                    <td>${entrada.dataEntrada}</td>
+                    <td>${entrada.cnpjFornecedor}</td>
+                    <td>${entrada.nomeFornecedor}</td>
+                    <td>${entrada.codigoGtin}</td>
+                    <td>${entrada.nomeProduto}</td>
+                    <td>${entrada.quantidade}</td>
+                    <td><button onclick="editarEntrada(${index})">Editar Entrada</button> <button onclick="removerEntrada(${index})">Apagar Entrada</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function editarEntrada(index) {
+            localStorage.setItem('editIndex', index);
+            window.location.href = 'entrada_exemplo.html';
+        }
+
+        function removerEntrada(index) {
+            entradas.splice(index, 1);
+            localStorage.setItem('entradas', JSON.stringify(entradas));
+            atualizarTabela();
+        }
+
+        function finalizarRegistro() {
+            localStorage.removeItem('entradas');
+            atualizarTabela();
+        }
+
+        function limparFormulario() {
+            document.getElementById('entrada-form').reset();
+            const camposDesabilitados = [
+                'nome-fornecedor',
+                'telefone-fornecedor',
+                'email-fornecedor',
+                'nome-produto',
+                'tipo-produto',
+                'estoque-minimo',
+                'valor-unitario',
+                'quantidade'
+            ];
+            camposDesabilitados.forEach(id => {
+                document.getElementById(id).disabled = true;
+            });
+            document.getElementById('index').value = '';
+            toggleCampos();
+        }
+
+        document.addEventListener('DOMContentLoaded', atualizarTabela);
+    </script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Estoque - Registro de Saída</title>
+    <link rel="stylesheet" href="saida.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1><a href="inicio.html" style="color: white; text-decoration: none;">SistemaGE</a></h1>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="usuario.html">Usuários</a></li>
+            <li><a href="produto.html">Produtos</a></li>
+            <li><a href="fornecedor.html">Fornecedores</a></li>
+            <li><a href="alerta.html">Alertas (6)</a></li>
+            <li><a href="login.html">Sair</a></li>
+        </ul>
+        <ul class="voltar">
+            <li><a href="inicio.html">Voltar</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div class="cadastro-saida">
+            <form id="saida-form">
+                <div class="formulario">
+                    <h2>Registro de Saída de Produto</h2>
+                    <div class="inputs">
+                        <div class="input-group">
+                            <label for="codigo-documento">Código do Documento:</label><br>
+                            <input type="text" id="codigo-documento" name="codigo-documento" oninput="toggleCampos()" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="data-saida">Data de Saída (DD/MM/AAAA):</label><br>
+                            <input type="text" id="data-saida" name="data-saida" oninput="toggleCampos()" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="tipo-saida">Tipo de Saída:</label><br>
+                            <select id="tipo-saida" name="tipo-saida" onchange="toggleValorUnitario(); toggleCampos()">
+                                <option value=""> </option>
+                                <option value="venda">Venda</option>
+                                <option value="consignacao">Consignação</option>
+                                <option value="doacao">Doação</option>
+                                <option value="amostra">Amostra</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="formulario">
+                    <div class="inputs">
+                        <div class="input-group">
+                            <label for="cnpj-cliente">CNPJ do Cliente:</label><br>
+                            <input type="text" id="cnpj-cliente" name="cnpj-cliente" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="nome-cliente">Nome do Cliente:</label><br>
+                            <input type="text" id="nome-cliente" name="nome-cliente" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="telefone-cliente">Telefone do Cliente:</label><br>
+                            <input type="text" id="telefone-cliente" name="telefone-cliente" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="email-cliente">E-mail do Cliente:</label><br>
+                            <input type="email" id="email-cliente" name="email-cliente" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="formulario">
+                    <div class="inputs">
+                        <div class="input-group">
+                            <label for="codigo-gtin">Código GTIN:</label><br>
+                            <input type="text" id="codigo-gtin" name="codigo-gtin" required disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="nome-produto">Nome do Produto:</label><br>
+                            <input type="text" id="nome-produto" name="nome-produto" disabled><br><br>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="tipo-produto">Tipo do Produto:</label><br>
+                            <input type="text" id="tipo-produto" name="tipo-produto" disabled>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="estoque-minimo">Estoque Mínimo:</label><br>
+                            <input type="number" id="estoque-minimo" name="estoque-minimo" min="0" disabled><br><br>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="valor-unitario">Valor Unitário:</label><br>
+                            <input type="number" id="valor-unitario" name="valor-unitario" step="0.01" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="quantidade">Quantidade:</label><br>
+                            <input type="number" id="quantidade" name="quantidade" min="1" required disabled>
+                        </div>
+                    </div><br>
+                    <button type="button" onclick="adicionarOuAlterarSaida()">Armazenar Saída de Produto</button>
+                    <button type="button" onclick="finalizarRegistro()">Finalizar Registro de Saída</button>
+                    <button type="button" onclick="limparFormulario()">Limpar</button>
+                </div>
+
+                <input type="hidden" id="index" name="index">
+            </form>
+        </div>
+
+        <div class="lista-saidas">
+            <h3>Lista de Saídas de Produtos</h3>
+            <table id="tabela-saidas">
+                <thead>
+                    <tr>
+                        <th>Código do Documento</th>
+                        <th>Data de Saída</th>
+                        <th>CNPJ do Cliente</th>
+                        <th>Tipo de Saída</th>
+                        <th>Código GTIN</th>
+                        <th>Quantidade</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        const saidas = JSON.parse(localStorage.getItem('saidas')) || [];
+    
+        function toggleValorUnitario() {
+            const tipoSaida = document.getElementById('tipo-saida').value;
+            const valorUnitarioInput = document.getElementById('valor-unitario');
+            if (tipoSaida === 'venda') {
+                valorUnitarioInput.disabled = false;
+            } else {
+                valorUnitarioInput.disabled = true;
+                valorUnitarioInput.value = '';
+            }
+        }
+    
+        function toggleCampos() {
+            const codigoDocumento = document.getElementById('codigo-documento').value.trim();
+            const dataSaida = document.getElementById('data-saida').value.trim();
+            const tipoSaida = document.getElementById('tipo-saida').value;
+    
+            const camposCliente = [
+                'cnpj-cliente',
+                'nome-cliente',
+                'telefone-cliente',
+                'email-cliente'
+            ];
+            const camposProduto = [
+                'codigo-gtin',
+                'valor-unitario',
+                'quantidade'
+            ];
+    
+            const habilitarCliente = codigoDocumento !== '' && dataSaida !== '';
+            camposCliente.forEach(id => {
+                document.getElementById(id).disabled = !habilitarCliente;
+            });
+    
+            const habilitarProduto = tipoSaida !== '';
+            camposProduto.forEach(id => {
+                document.getElementById(id).disabled = !habilitarProduto;
+            });
+        }
+    
+        document.getElementById('codigo-gtin').addEventListener('input', function() {
+            const codigoGtin = this.value.trim();
+            const produtos = {
+                '1': { nome: 'Produto A', tipo: 'Móveis', estoqueMinimo: 10, },
+                '2': { nome: 'Produto B', tipo: 'Eletrônicos', estoqueMinimo: 5},
+                '3': { nome: 'Produto C', tipo: 'Alimentação', estoqueMinimo: 20}
+            };
+    
+            const produto = produtos[codigoGtin];
+            if (produto) {
+                document.getElementById('nome-produto').value = produto.nome;
+                document.getElementById('tipo-produto').value = produto.tipo;
+                document.getElementById('estoque-minimo').value = produto.estoqueMinimo;
+                document.getElementById('valor-unitario').value = produto.valorUnitario;
+            } else {
+                document.getElementById('nome-produto').value = '';
+                document.getElementById('tipo-produto').value = '';
+                document.getElementById('estoque-minimo').value = '';
+                document.getElementById('valor-unitario').value = '';
+            }
+        });
+    
+        function adicionarOuAlterarSaida() {
+            const codigoDocumento = document.getElementById('codigo-documento').value;
+            const dataSaida = document.getElementById('data-saida').value;
+            const cnpjCliente = document.getElementById('cnpj-cliente').value;
+            const nomeCliente = document.getElementById('nome-cliente').value;
+            const telefoneCliente = document.getElementById('telefone-cliente').value;
+            const emailCliente = document.getElementById('email-cliente').value;
+            const tipoSaida = document.getElementById('tipo-saida').value;
+            const valorUnitario = document.getElementById('valor-unitario').value;
+            const codigoGtin = document.getElementById('codigo-gtin').value;
+            const quantidade = document.getElementById('quantidade').value;
+            const index = document.getElementById('index').value;
+    
+            if (codigoDocumento.trim() === '' || dataSaida.trim() === '' || codigoGtin.trim() === '' || quantidade.trim() === '') {
+                return;
+            }
+    
+            const saida = {
+                codigoDocumento,
+                dataSaida,
+                cnpjCliente,
+                nomeCliente,
+                telefoneCliente,
+                emailCliente,
+                tipoSaida,
+                valorUnitario: tipoSaida === 'venda' ? valorUnitario : null,
+                codigoGtin,
+                quantidade
+            };
+    
+            if (index === '') {
+                saidas.push(saida);
+            } else {
+                saidas[index] = saida;
+            }
+    
+            localStorage.setItem('saidas', JSON.stringify(saidas));
+            limparFormulario();
+            carregarSaidas();
+        }
+    
+        function carregarSaidas() {
+            const tabelaSaidas = document.getElementById('tabela-saidas').getElementsByTagName('tbody')[0];
+            tabelaSaidas.innerHTML = '';
+    
+            saidas.forEach((saida, index) => {
+                const row = tabelaSaidas.insertRow();
+                row.insertCell(0).innerText = saida.codigoDocumento;
+                row.insertCell(1).innerText = saida.dataSaida;
+                row.insertCell(2).innerText = saida.cnpjCliente;
+                row.insertCell(3).innerText = saida.tipoSaida;
+                row.insertCell(4).innerText = saida.codigoGtin;
+                row.insertCell(5).innerText = saida.quantidade;
+    
+                const actionsCell = row.insertCell(6);
+                const editButton = document.createElement('button');
+                editButton.innerText = 'Editar Saída';
+                editButton.onclick = () => editarSaida(index);
+                actionsCell.appendChild(editButton);
+    
+                const deleteButton = document.createElement('button');
+                deleteButton.innerText = 'Apagar Saída';
+                deleteButton.onclick = () => excluirSaida(index);
+                actionsCell.appendChild(deleteButton);
+            });
+        }
+    
+        function editarSaida(index) {
+            const saida = saidas[index];
+            localStorage.setItem('saidaEditando', JSON.stringify(saida));
+            window.location.href = 'saida_exemplo.html';
+        }
+
+    
+        function excluirSaida(index) {
+            saidas.splice(index, 1);
+            localStorage.setItem('saidas', JSON.stringify(saidas));
+            carregarSaidas();
+        }
+    
+        function limparFormulario() {
+            document.getElementById('saida-form').reset();
+            document.getElementById('index').value = '';
+            toggleValorUnitario();
+            toggleCampos();
+        }
+    
+        function finalizarRegistro() {
+            limparFormulario();
+            window.location.href = 'inicio.html';
+        }
+    
+        window.onload = carregarSaidas;
+    </script>    
+    
+</body>
+</html>

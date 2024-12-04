@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Estoque - Registro de Entrada</title>
+    <link rel="stylesheet" href="entrada.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1><a href="inicio.html" style="color: white; text-decoration: none;">SistemaGE</a></h1>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="usuario.html">Usuários</a></li>
+            <li><a href="produto.html">Produtos</a></li>
+            <li><a href="fornecedor.html">Fornecedores</a></li>
+            <li><a href="alerta.html">Alertas (6)</a></li>
+            <li><a href="login.html">Sair</a></li>
+        </ul>
+        <ul class="voltar">
+            <li><a href="inicio.html">Voltar</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div class="cadastro-entrada">
+            <form id="entrada-form">
+                <div class="formulario">
+                    <h2>Editar Entrada</h2>
+                    <div class="inputs">
+                        <div class="input-group">
+                            <label for="codigo-documento">Código do Documento:</label><br>
+                            <input type="text" id="codigo-documento" name="codigo-documento" disabled>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="data-entrada">Data de Entrada (DD/MM/AAAA):</label><br>
+                            <input type="text" id="data-entrada" name="data-entrada" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="formulario">
+                    <div class="inputs">
+                        <div class="input-group">
+                            <label for="cnpj-fornecedor">CNPJ do Fornecedor:</label><br>
+                            <input type="text" id="cnpj-fornecedor" name="cnpj-fornecedor" disabled>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="nome-fornecedor">Nome do Fornecedor:</label><br>
+                            <input type="text" id="nome-fornecedor" name="nome-fornecedor" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="telefone-fornecedor">Telefone do Fornecedor:</label><br>
+                            <input type="text" id="telefone-fornecedor" name="telefone-fornecedor" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="email-fornecedor">E-mail do Fornecedor:</label><br>
+                            <input type="email" id="email-fornecedor" name="email-fornecedor" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="formulario">
+                    <div class="inputs">
+                        <div class="input-group">
+                            <label for="codigo-gtin">Código GTIN:</label><br>
+                            <input type="text" id="codigo-gtin" name="codigo-gtin" oninput="preencherProduto()">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="nome-produto">Nome do Produto:</label><br>
+                            <input type="text" id="nome-produto" name="nome-produto" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="tipo-produto">Tipo do Produto:</label><br>
+                            <input type="text" id="tipo-produto" name="tipo-produto" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="estoque-minimo">Estoque Mínimo:</label><br>
+                            <input type="number" id="estoque-minimo" name="estoque-minimo" disabled>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="valor-unitario">Valor Unitário:</label><br>
+                            <input type="text" id="valor-unitario" name="valor-unitario">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="quantidade">Quantidade:</label><br>
+                            <input type="number" id="quantidade" name="quantidade">
+                        </div>
+                    </div>
+                    <button type="button" onclick="salvarEdicao()">Finalizar Edição</button>
+                    <button type="button" onclick="cancelarEdicao()">Cancelar Edição</button>
+                </div>
+
+                <input type="hidden" id="index" name="index">
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const index = localStorage.getItem('editIndex');
+            const entradas = JSON.parse(localStorage.getItem('entradas'));
+            const entrada = entradas[index];
+
+            document.getElementById('codigo-documento').value = entrada.codigoDocumento;
+            document.getElementById('data-entrada').value = entrada.dataEntrada;
+            document.getElementById('cnpj-fornecedor').value = entrada.cnpjFornecedor;
+            document.getElementById('nome-fornecedor').value = entrada.nomeFornecedor;
+            document.getElementById('telefone-fornecedor').value = entrada.telefoneFornecedor;
+            document.getElementById('email-fornecedor').value = entrada.emailFornecedor;
+            document.getElementById('codigo-gtin').value = entrada.codigoGtin;
+            document.getElementById('nome-produto').value = entrada.nomeProduto;
+            document.getElementById('tipo-produto').value = entrada.tipoProduto;
+            document.getElementById('estoque-minimo').value = entrada.estoqueMinimo;
+            document.getElementById('valor-unitario').value = entrada.valorUnitario;
+            document.getElementById('quantidade').value = entrada.quantidade;
+
+            document.getElementById('index').value = index;
+        });
+
+        function preencherProduto() {
+            const codigoGtin = document.getElementById('codigo-gtin').value.trim();
+            const produtos = {
+                '1': { nome: 'Produto A', tipo: 'moveis', estoqueMinimo: 10},
+                '2': { nome: 'Produto B', tipo: 'eletronicos', estoqueMinimo: 5},
+                '3': { nome: 'Produto C', tipo: 'alimentacao', estoqueMinimo: 20}
+            };
+
+            const produto = produtos[codigoGtin];
+            if (produto) {
+                document.getElementById('nome-produto').value = produto.nome;
+                document.getElementById('tipo-produto').value = produto.tipo;
+                document.getElementById('estoque-minimo').value = produto.estoqueMinimo;
+            } else {
+                document.getElementById('nome-produto').value = '';
+                document.getElementById('tipo-produto').value = '';
+                document.getElementById('estoque-minimo').value = '';
+            }
+        }
+
+        function salvarEdicao() {
+            const index = document.getElementById('index').value;
+            const entradas = JSON.parse(localStorage.getItem('entradas'));
+
+            entradas[index].codigoGtin = document.getElementById('codigo-gtin').value;
+            entradas[index].valorUnitario = document.getElementById('valor-unitario').value;
+            entradas[index].quantidade = document.getElementById('quantidade').value;
+
+            localStorage.setItem('entradas', JSON.stringify(entradas));
+            localStorage.removeItem('editIndex');
+            window.location.href = 'entrada.html';
+        }
+
+        function cancelarEdicao() {
+            localStorage.removeItem('editIndex');
+            window.location.href = 'entrada.html';
+        }
+    </script>
+</body>
+</html>

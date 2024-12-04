@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Estoque</title>
+    <link rel="stylesheet" href="relatorio.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1><a href="inicio.html" style="color: white; text-decoration: none;">SistemaGE</a></h1>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="usuario.html">Usuários</a></li>
+            <li><a href="produto.html">Produtos</a></li>
+            <li><a href="fornecedor.html">Fornecedores</a></li>
+            <li><a href="alerta.html">Alertas (6)</a></li>
+            <li><a href="login.html">Sair</a></li>
+        </ul>
+        <ul class="voltar">
+            <li><a href="inicio.html">Voltar</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div class="cadastro-relatorio">
+            <h2>Gerar Relatório</h2>
+            
+            <form id="relatorio-form">
+                <label for="data-inicial">Data Inicial:</label><br>
+                <input type="date" id="data-inicial" name="data-inicial" required><br><br>
+
+                <label for="data-final">Data Final:</label><br>
+                <input type="date" id="data-final" name="data-final" required><br><br>
+                
+                <button type="button" onclick=>Gerar Relatório</button>
+                <button type="button" onclick="window.location.href='inicio.html'">Voltar</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
