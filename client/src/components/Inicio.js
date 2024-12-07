@@ -10,7 +10,7 @@ const Inicio = () => {
           <h1><Link to="/" style={{color: 'white', textDecoration: 'none'}}>SistemaGE</Link></h1>
         </div>
       </header>
-      
+
       <nav>
         <ul>
           <li><Link to="/usuario">Usuários</Link></li>
@@ -20,7 +20,7 @@ const Inicio = () => {
           <li><Link to="/login">Sair</Link></li>
         </ul>
       </nav>
-      
+
       <main>
         <div className="barra-tarefas">
           <h3>Relatórios</h3>
