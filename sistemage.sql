@@ -193,3 +193,10 @@ INSERT INTO TIPO_PRODUTO (idtipoproduto, nometipoproduto)
 VALUES (3, 'Alimentação');
 
 select * from tipo_produto;
+
+select * from produto;
+
+SELECT tp.nometipoproduto 
+FROM PRODUTO p
+JOIN TIPO_PRODUTO tp ON p.tipo_produto_idtipoproduto = tp.idtipoproduto
+WHERE p.codigogtin = 789;
