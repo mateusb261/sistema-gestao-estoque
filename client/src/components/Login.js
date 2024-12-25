@@ -10,7 +10,7 @@ const Login = () => {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        if (username === "mateusbastos261@gmail.com" && password === "1234") {
+        if (username === "exemploemail@gmail.com" && password === "1234") {
             navigate("/inicio");
         } else {
             setError("Credenciais inválidas. Por favor, tente novamente.");

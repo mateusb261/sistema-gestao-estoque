@@ -17,7 +17,7 @@ const Inicio = () => {
           <li><Link to="/produto">Produtos</Link></li>
           <li><Link to="/fornecedor">Fornecedores</Link></li>
           <li><Link to="/alerta">Alertas (6)</Link></li>
-          <li><Link to="/login">Sair</Link></li>
+          <li><Link to="/">Sair</Link></li>
         </ul>
       </nav>
 
