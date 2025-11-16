@@ -58,7 +58,7 @@ main {
 
 /* cadastro */
 .cadastro-produto {
-    text-align: left; /* Garante que tudo dentro do .cadastro-produto esteja alinhado à esquerda */
+    text-align: center; /* Garante que tudo dentro do .cadastro-produto esteja alinhado à esquerda */
     background-color: #e0e0e0;
     padding: 20px;
     width: 90%;
