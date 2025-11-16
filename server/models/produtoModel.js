@@ -1,12 +1,12 @@
 // /models/produtoModel.js
 const db = require('../config/db');
 
-const getProdutos = async () => {
+const consultarProduto = async () => {
   const [rows] = await db.execute('SELECT * FROM PRODUTO');
   return rows;
 };
 
-const createProduto = async (produto) => {
+const cadastrarProduto = async (produto) => {
   try {
     let codigogtin = produto.gtin;
     let nomeproduto = produto.nomeProduto;
@@ -44,6 +44,6 @@ const createProduto = async (produto) => {
 
 
 module.exports = {
-  getProdutos,
-  createProduto
+  consultarProduto,
+  cadastrarProduto
 };

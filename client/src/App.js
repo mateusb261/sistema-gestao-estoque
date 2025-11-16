@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Login from './components/Login'; // A página inicial
 import Inicio from './components/Inicio'; // A página inicial
 import Usuario from './components/Usuario'; // Nova página para 'Usuários'
 import Produto from './components/Produto'; // Nova página para 'Produtos'
@@ -11,8 +12,9 @@ const App = () => {
     <Router>
       <Routes>
         {/* Rota principal */}
-        <Route path="/" element={<Inicio />} />
+        <Route path="/" element={<Login />} />
         {/* Outras rotas */}
+        <Route path="/inicio" element={<Inicio />} />
         <Route path="/usuario" element={<Usuario />} />
         <Route path="/produto" element={<Produto />} />
         <Route path="/fornecedor" element={<Fornecedor />} />
