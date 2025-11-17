@@ -10,14 +10,15 @@ const Inicio = () => {
           <h1><Link to="/" style={{color: 'white', textDecoration: 'none'}}>SistemaGE</Link></h1>
         </div>
       </header>
-
+      
       <nav>
         <ul>
           <li><Link to="/usuario">Usuários</Link></li>
           <li><Link to="/produto">Produtos</Link></li>
           <li><Link to="/fornecedor">Fornecedores</Link></li>
           <li><Link to="/alerta">Alertas (6)</Link></li>
-          <li><Link to="/">Sair</Link></li>
+          <li><Link to="/saida">Saída </Link></li>
+          <li><Link to="/login">Sair</Link></li>
         </ul>
       </nav>
 

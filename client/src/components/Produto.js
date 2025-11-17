@@ -48,19 +48,11 @@ const Produto = () => {
     } else {
       const errorData = await response.json();
 
-      // Tratamento específico para erros do servidor
-      switch (errorData.error) {
-        case "CAMPO_FALTANDO":
-          alert(`${errorData.message}`);
-          break;
-        case "DUPLICADO":
-          alert(`${errorData.message}`);
-          break;
-        case "ERRO_INTERNO":
-          alert(`${errorData.message}`);
-          break;
-        default:
-          alert(`${errorData.message}`);
+      // Verifica o tipo de erro
+      if (errorData.error === "CAMPO_FALTANDO") {
+        alert("Preencha todos os campos de cadastro de produto!");
+      } else {
+        alert(`Erro ao cadastrar produto: ${errorData.message || "Erro desconhecido"}`);
       }
     }
   } catch (error) {
@@ -127,10 +119,10 @@ const Produto = () => {
           <li><Link to="/produto">Produtos</Link></li>
           <li><Link to="/fornecedor">Fornecedores</Link></li>
           <li><Link to="/alerta">Alertas (6)</Link></li>
-          <li><Link to="/">Sair</Link></li>
+          <li><Link to="/login">Sair</Link></li>
         </ul>
         <ul className="voltar">
-          <li><Link to="/inicio">Voltar</Link></li>
+          <li><Link to="/">Voltar</Link></li>
         </ul>
       </nav>
 
